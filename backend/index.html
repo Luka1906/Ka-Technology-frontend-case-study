@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Email App Test</title>
+</head>
+<body>
+  <h1>Simple Email App Test</h1>
+  <h2>Register</h2>
+  <input id="reg-username" placeholder="Username">
+  <input id="reg-password" type="password" placeholder="Password">
+  <input id="reg-confirm-password" type="password" placeholder="Confirm Password">
+  <input id="reg-first-name" placeholder="First Name">
+  <input id="reg-last-name" placeholder="Last Name">
+  <input id="reg-dob" type="date" placeholder="Date of Birth">
+  <button onclick="register()">Register</button>
+  <div id="reg-result"></div>
+
+  <h2>Login</h2>
+  <input id="login-username" placeholder="Username">
+  <input id="login-password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+  <button id="logout-btn" onclick="logout()" style="display:none;">Logout</button>
+  <div id="login-result"></div>
+
+  <h2>Inbox</h2>
+  <button onclick="getInbox()">Get Inbox</button>
+  <ul id="inbox-list"></ul>
+
+  <h2>Send Email</h2>
+  <input id="to" placeholder="To">
+  <input id="subject" placeholder="Subject">
+  <input id="body" placeholder="Body">
+  <button onclick="sendMail()">Send</button>
+  <div id="send-result"></div>
+
+  <script>
+    const api = 'http://localhost:8080';
+
+    function register() {
+      fetch(api + '/auth/register', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('reg-username').value,
+          password: document.getElementById('reg-password').value,
+          confirm_password: document.getElementById('reg-confirm-password').value,
+          first_name: document.getElementById('reg-first-name').value,
+          last_name: document.getElementById('reg-last-name').value,
+          dob: document.getElementById('reg-dob').value,
+          email: 'dummy' // Email is ignored by backend, but required by API
+        }),
+        credentials: 'include'
+      })
+      .then(r => r.json())
+      .then(data => document.getElementById('reg-result').innerText = JSON.stringify(data));
+    }
+
+    function login() {
+      fetch(api + '/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: document.getElementById('login-username').value,
+          password: document.getElementById('login-password').value
+        }),
+        credentials: 'include'
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('login-result').innerText = JSON.stringify(data);
+        if (!data.error) {
+          document.getElementById('logout-btn').style.display = '';
+        }
+      });
+    }
+
+    function logout() {
+      fetch(api + '/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      .then(r => r.json())
+      .then(data => {
+        document.getElementById('login-result').innerText = JSON.stringify(data);
+        document.getElementById('logout-btn').style.display = 'none';
+      });
+    }
+
+    function getInbox() {
+      fetch(api + '/mail/inbox', {
+        credentials: 'include'
+      })
+      .then(r => r.json())
+      .then(data => {
+        const list = document.getElementById('inbox-list');
+        list.innerHTML = '';
+        if (Array.isArray(data)) {
+          data.forEach(email => {
+            const li = document.createElement('li');
+            li.innerText = `From: ${email.from}, Subject: ${email.subject}, Body: ${email.body}, Label: ${email.label}`;
+            list.appendChild(li);
+          });
+        } else {
+          list.innerHTML = JSON.stringify(data);
+        }
+      });
+    }
+
+    function sendMail() {
+      fetch(api + '/mail/send', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          to: document.getElementById('to').value,
+          subject: document.getElementById('subject').value,
+          body: document.getElementById('body').value
+        }),
+        credentials: 'include'
+      })
+      .then(r => r.json())
+      .then(data => document.getElementById('send-result').innerText = JSON.stringify(data));
+    }
+  </script>
+</body>
+</html>
