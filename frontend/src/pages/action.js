@@ -2,6 +2,8 @@ import { redirect } from "react-router-dom";
 
 const api = "http://localhost:8080";
 
+// Sign Up Action
+
 export async function signUpAction({ request }) {
   const formData = await request.formData();
   const data = {
@@ -22,11 +24,49 @@ export async function signUpAction({ request }) {
   });
 
   const responseData = await response.json();
-  if (response.ok) {
-    return redirect("/login");
+  if (!response.ok) {
+    return { error: responseData.error };
   }
-  
-  return {error: responseData.error}
 
+  return redirect("/login");
+}
 
+// Log in Action
+
+export async function loginAction({ request }) {
+  const formData = await request.formData();
+  const data = {
+    username: formData.get("username"),
+    password: formData.get("password"),
+  };
+
+  const response = await fetch(api + "/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+
+  const responseData = await response.json();
+
+  if (!response.ok) {
+    return {error: responseData.error}
+  }
+
+  return redirect ("/profile")
+
+}
+
+// Log Out action
+
+export async function logoutAction ({request}) {
+  const response = await fetch (api + "/auth/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to logout user")
+  }
+  return redirect("/login")
 }

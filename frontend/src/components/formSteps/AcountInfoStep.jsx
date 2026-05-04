@@ -1,12 +1,9 @@
-import Button from "../../ui/Button";
 import Input from "../../ui/Input";
-import { FaArrowRight } from "react-icons/fa6";
 import { useState } from "react";
-import { getPasswordError, validatePassword } from "../../utils/validation";
+import { validatePassword } from "../../utils/validation";
 import PasswordChecklist from "./PasswordChecklist";
 
 const AccountInfoStep = ({
-  onClick,
   onChange,
   formData,
   onBlur,
@@ -17,13 +14,7 @@ const AccountInfoStep = ({
     confirmPassword: false,
   });
 
-  // Checking if there is any error in password  errorchecklist
-
   const { isValid } = validatePassword(formData.password);
-
-  // Checking if password input is focused
-
-  const [isTouched, setIsTouched] = useState(false);
 
   const handlePasswordVisibility = (name) => {
     setPassVisible((prev) => ({
@@ -32,8 +23,6 @@ const AccountInfoStep = ({
     }));
   };
 
-  // Checking if passwords match to display check icon
-
   const isMatch =
     formData.confirmPassword.length > 0 &&
     formData.password === formData.confirmPassword &&
@@ -41,83 +30,83 @@ const AccountInfoStep = ({
     !signUpErr.confirmPassword;
 
   return (
-     <div className="flex flex-col gap-3">
-          <div className="text-center space-y-1">
-          <h2 className="text-xl sm:text-2xl font-semibold tracking-tight">Create your account </h2>
-        <p className=" text-slate-400 text-sm">Set up your login details to get started</p>
+    <div className="flex flex-col gap-5">
+      <div className="space-y-1 text-center">
+        <h2 className="text-xl font-semibold tracking-tight sm:text-2xl">
+          Create your account
+        </h2>
+        <p className="text-sm text-slate-400">
+          Set up your login details to get started
+        </p>
       </div>
 
-      {/* Inputs */}
+      <div className="flex flex-col gap-4">
+        {/* Username */}
+        <div className="flex flex-col gap-1.5">
+          <Input
+            onChange={onChange}
+            onBlur={onBlur}
+            name="username"
+            value={formData.username}
+            label="Username"
+            placeholder="Enter your username"
+            error={signUpErr.username}
+          />
 
-      <Input
-        onChange={onChange}
-        onBlur={onBlur}
-        name="username"
-        value={formData.username}
-        label="Username"
-        placeholder="Enter your username"
-        error={signUpErr.username}
-      />
-      {signUpErr.username && (
-        <p className="text-sm text-red-500">{signUpErr.username}</p>
-      )}
+          {signUpErr.username && (
+            <p className="text-sm text-red-500">{signUpErr.username}</p>
+          )}
+        </div>
 
-      <Input
-        onChange={onChange}
-        onBlur={(e) => {
-          setIsTouched(false);
-          onBlur(e);
-        }}
-        onFocus={() => setIsTouched(true)}
-        onToggleVisibility={() => handlePasswordVisibility("password")}
-        isVisible={passVisible.password}
-        type="password"
-        name="password"
-        value={formData.password}
-        label="Password"
-        placeholder="Create your password"
-        error={signUpErr.password}
-      />
-      {!isValid && formData.password && (
-        <PasswordChecklist password={formData.password} />
-      )}
-      {!formData.password && (
-        <p className="text-sm text-red-500">{signUpErr.password}</p>
-      )}
+        {/* Password */}
+        <div className="flex flex-col gap-1.5">
+          <Input
+            onChange={onChange}
+            onBlur={onBlur}
+            onToggleVisibility={() => handlePasswordVisibility("password")}
+            isVisible={passVisible.password}
+            type="password"
+            name="password"
+            value={formData.password}
+            label="Password"
+            placeholder="Create your password"
+            error={signUpErr.password}
+          />
 
-      <Input
-        onChange={onChange}
-        onBlur={onBlur}
-        onToggleVisibility={() => handlePasswordVisibility("confirmPassword")}
-        isVisible={passVisible.confirmPassword}
-        type="password"
-        name="confirmPassword"
-        value={formData.confirmPassword}
-        label="Confirm Password"
-        placeholder="Confirm your password"
-        isMatch={isMatch}
-        error={signUpErr.confirmPassword}
-      />
-      {signUpErr.confirmPassword && (
-        <p className="text-sm text-red-500">{signUpErr.confirmPassword}</p>
-      )}
+          {formData.password && !isValid && (
+            <PasswordChecklist password={formData.password} />
+          )}
 
-      {/* Button */}
-      <Button
-        onClick={onClick}
-        className="mt-4 font-medium flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-500 border-none"
-      >
-        Continue
-        <FaArrowRight className="text-sm" />
-      </Button>
+          {!formData.password && signUpErr.password && (
+            <p className="text-sm text-red-500">{signUpErr.password}</p>
+          )}
+        </div>
 
-      {/* Footer */}
-      <p className="text-sm text-center text-slate-400">
-        Already have an account?
-        <span className="ml-1 text-indigo-400 hover:text-indigo-300 cursor-pointer transition">
-          Log in
-        </span>
-      </p>
+        {/* Confirm Password */}
+        <div className="flex flex-col gap-1.5">
+          <Input
+            onChange={onChange}
+            onBlur={onBlur}
+            onToggleVisibility={() =>
+              handlePasswordVisibility("confirmPassword")
+            }
+            isVisible={passVisible.confirmPassword}
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            isMatch={isMatch}
+            error={signUpErr.confirmPassword}
+          />
+
+          {signUpErr.confirmPassword && (
+            <p className="text-sm text-red-500">
+              {signUpErr.confirmPassword}
+            </p>
+          )}
+        </div>
+      </div>
     </div>
   );
 };

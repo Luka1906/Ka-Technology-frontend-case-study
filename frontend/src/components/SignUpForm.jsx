@@ -1,6 +1,8 @@
 import { useState } from "react";
 import Card from "../ui/Card";
-import { FaCheck } from "react-icons/fa6";
+import Button from "../ui/Button";
+import { Link } from "react-router-dom";
+import { FaCheck, FaArrowRight } from "react-icons/fa6";
 import AccountInfoStep from "./formSteps/AcountInfoStep";
 import PersonalInfoStep from "./formSteps/PersonalInfoStep";
 import ConfirmStep from "./formSteps/ConfirmStep";
@@ -8,7 +10,6 @@ import {
   getPasswordError,
   validateConfirmPassword,
   validateFields,
-  validatePassword,
   validateUsername,
 } from "../utils/validation";
 
@@ -16,6 +17,7 @@ const steps = ["Account Info", "Personal Info", "Confirm"];
 
 const SignUpForm = () => {
   const [currentStep, setCurrentStep] = useState(0);
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
@@ -27,14 +29,14 @@ const SignUpForm = () => {
 
   const [signUpErr, setSignUpErr] = useState({});
 
-  // Listening input changes
-
   const handleOnChange = (event) => {
     const { name, value } = event.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
+
     setSignUpErr((prev) => ({
       ...prev,
       [name]: "",
@@ -46,13 +48,12 @@ const SignUpForm = () => {
       ...prev,
       date: date,
     }));
+
     setSignUpErr((prev) => ({
       ...prev,
       date: "",
     }));
   };
-
-  // Listening input errors
 
   const handleOnBlur = (event) => {
     const { name, value } = event.target;
@@ -87,28 +88,24 @@ const SignUpForm = () => {
     }));
   };
 
-  // Validate Forms on button click
-
   const validateStepOne = () => {
     const usernameErr = validateUsername(formData.username);
     const passwordErr = getPasswordError(formData.password);
     const confirmPasswordErr = validateConfirmPassword(
       formData.password,
-      formData.confirmPassword,
+      formData.confirmPassword
     );
 
-    const hasErrors = usernameErr || passwordErr || confirmPasswordErr;
-
-    if (hasErrors) {
+    if (usernameErr || passwordErr || confirmPasswordErr) {
       setSignUpErr((prev) => ({
         ...prev,
         username: usernameErr,
         password: passwordErr,
         confirmPassword: confirmPasswordErr,
       }));
-
       return false;
     }
+
     return true;
   };
 
@@ -117,16 +114,13 @@ const SignUpForm = () => {
     const lastNameErr = validateFields(formData.lastName, "Last name");
     const dateErr = validateFields(formData.date, "Date of birth");
 
-    const hasErrors = firstNameErr || lastNameErr || dateErr;
-
-    if (hasErrors) {
+    if (firstNameErr || lastNameErr || dateErr) {
       setSignUpErr((prev) => ({
         ...prev,
         firstName: firstNameErr,
         lastName: lastNameErr,
         date: dateErr,
       }));
-
       return false;
     }
 
@@ -146,100 +140,127 @@ const SignUpForm = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center gap-8 px-4 py-8 text-white">
-      <div className="flex flex-col items-center gap-1.5 text-center">
-        <h1 className="text-2xl sm:text-3xl">Sign Up</h1>
-        <p className="text-sm text-slate-200">
-          Create your account in a few simple steps
-        </p>
-      </div>
+    <div className="flex min-h-screen items-center justify-center p-6">
+      <div className="w-full max-w-[520px]">
 
-      <Card className="w-full max-w-[520px] text-white">
-        <div className="mb-6 flex w-full items-start justify-center overflow-x-auto">
-          {steps.map((step, index) => {
-            const isActive = index === currentStep;
-            const isCompleted = index < currentStep;
 
-            return (
-              <div key={step} className="flex items-start">
-                {/* Circle */}
-                <div className="flex w-20 flex-col items-center sm:w-24">
-                  <div
-                    className={`flex h-8 w-8 items-center justify-center rounded-full text-sm sm:h-10 sm:w-10 sm:text-base transition
-  ${
-    isCompleted
-      ? "bg-linear-to-r from-violet-500 to-indigo-600 opacity-65 text-white"
-      : isActive
-        ? "bg-linear-to-r from-violet-500 to-indigo-600 brightness-110 text-white"
-        : "bg-white/5 border border-white/10 text-slate-400"
-  }
-`}
-                  >
-                    {isCompleted ? <FaCheck /> : index + 1}
+        <div className="mb-6 text-center">
+          <div className="mx-auto mb-3 flex h-14 w-14 items-center justify-center rounded-2xl bg-linear-to-br from-violet-500 to-indigo-600 text-xl font-bold text-white">
+            KA
+          </div>
+
+          <h1 className="text-3xl font-semibold text-white">
+            KA Mail
+          </h1>
+           <p className="mt-2 text-sm text-slate-400">
+            Create your private message hub
+          </p>
+        </div>
+
+        <Card className="w-full max-w-[520px]">
+          <div className="mb-6 flex w-full items-start justify-center overflow-x-auto">
+            {steps.map((step, index) => {
+              const isActive = index === currentStep;
+              const isCompleted = index < currentStep;
+
+              return (
+                <div key={step} className="flex items-start">
+                  <div className="flex w-20 flex-col items-center sm:w-24">
+                    <div
+                      className={`flex h-8 w-8 items-center justify-center rounded-full text-sm sm:h-10 sm:w-10 sm:text-base transition
+                        ${
+                          isCompleted
+                            ? "bg-linear-to-r from-violet-500 to-indigo-600 opacity-65 text-white"
+                            : isActive
+                            ? "bg-linear-to-r from-violet-500 to-indigo-600 brightness-110 text-white"
+                            : "bg-white/5 border border-white/10 text-slate-400"
+                        }`}
+                    >
+                      {isCompleted ? <FaCheck /> : index + 1}
+                    </div>
+
+                    <p
+                      className={`mt-2 text-center text-xs sm:text-sm transition
+                        ${
+                          isActive
+                            ? "text-white"
+                            : isCompleted
+                            ? "text-indigo-400 opacity-75"
+                            : "text-slate-400"
+                        }`}
+                    >
+                      {step}
+                    </p>
                   </div>
 
-                  {/* Label */}
-                  <p
-                    className={`mt-2 text-center text-xs sm:text-sm transition
-              ${
-                isActive
-                  ? "text-white"
-                  : isCompleted
-                    ? "text-indigo-400 opacity-75"
-                    : "text-slate-400"
-              }
-            `}
-                  >
-                    {step}
-                  </p>
+                  {index < steps.length - 1 && (
+                    <div
+                      className={`mt-4 h-0.5 w-6 sm:mt-5 sm:w-20 transition
+                        ${
+                          isCompleted
+                            ? "bg-indigo-400 opacity-75"
+                            : isActive
+                            ? "bg-indigo-500 brightness-125"
+                            : "bg-white/10"
+                        }`}
+                    />
+                  )}
                 </div>
+              );
+            })}
+          </div>
 
-                {/* Line */}
-                {index < steps.length - 1 && (
-                  <div
-                    className={`mt-4 h-0.5 w-6 sm:mt-5 sm:w-20 transition
-              ${
-                isCompleted
-                  ? "bg-indigo-400 opacity-75"
-                  : isActive
-                    ? "bg-indigo-500 brightness-125"
-                    : "bg-white/10"
-              }
-            `}
-                  />
-                )}
-              </div>
-            );
-          })}
-        </div>
+          <div className="mt-8">
+            {currentStep === 0 && (
+              <AccountInfoStep
+                formData={formData}
+                onChange={handleOnChange}
+                onClick={handleNextStep}
+                onBlur={handleOnBlur}
+                signUpErr={signUpErr}
+              />
+            )}
 
-        <div className="mt-8">
-          {currentStep === 0 && (
-            <AccountInfoStep
-              formData={formData}
-              onChange={handleOnChange}
+            {currentStep === 1 && (
+              <PersonalInfoStep
+                formData={formData}
+                onChange={handleOnChange}
+                onDateChange={handleDateChange}
+                onClick={handleNextStep}
+                onBlur={handleOnBlur}
+                signUpErr={signUpErr}
+                setSignUpErr={setSignUpErr}
+              />
+            )}
+
+            {currentStep === 2 && (
+              <ConfirmStep
+                formData={formData}
+                setCurrentStep={setCurrentStep}
+              />
+            )}
+          </div>
+
+          {currentStep !== steps.length - 1 && (
+            <Button
               onClick={handleNextStep}
-              onBlur={handleOnBlur}
-              signUpErr={signUpErr}
-            />
+              className="mt-6 font-medium flex items-center justify-center gap-2 w-full"
+            >
+              Continue
+              <FaArrowRight className="text-sm" />
+            </Button>
           )}
 
-          {currentStep === 1 && (
-            <PersonalInfoStep
-              formData={formData}
-              onChange={handleOnChange}
-              onDateChange={handleDateChange}
-              onClick={handleNextStep}
-              onBlur={handleOnBlur}
-              signUpErr={signUpErr}
-              setSignUpErr={setSignUpErr}
-            />
-          )}
-          {currentStep === 2 && (
-            <ConfirmStep formData={formData} setCurrentStep={setCurrentStep} />
-          )}
-        </div>
-      </Card>
+          <p className="text-sm text-center text-slate-400 mt-5">
+            Already have an account?
+            <Link to="/login">
+              <span className="ml-1 text-indigo-400 hover:text-indigo-300 cursor-pointer transition">
+                Log in
+              </span>
+            </Link>
+          </p>
+        </Card>
+      </div>
     </div>
   );
 };

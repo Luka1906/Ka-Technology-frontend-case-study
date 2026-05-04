@@ -10,19 +10,110 @@ mail_bp = Blueprint('mail', __name__)
 
 # Dummy inbox data for demonstration and testing purposes
 # Each email has a unique sender, subject, body, and a label (inbox or sent)
-dummy_inbox = [
-    {"id": 1, "from": "alice@ka-tch.com", "subject": "Welcome!", "body": "Hello!", "label": "inbox"},
-    {"id": 2, "from": "bob@outlook.com", "subject": "Meeting", "body": "Let's meet.", "label": "inbox"},
-    {"id": 3, "from": "carol@company.org", "subject": "(No Subject)", "body": "", "label": "inbox"},
-    {"id": 4, "from": "dave@ka-tch.com", "subject": "Long Subject " + "A"*100, "body": "This is a long subject edge case.", "label": "inbox"},
-    {"id": 5, "from": "eve@sub.example.com", "subject": "Special chars !@#$%^&*()_+", "body": "Body with special characters: <>&\"'", "label": "inbox"},
-    {"id": 6, "from": "frank@my-email.net", "subject": "Unicode: 你好, мир, 😀", "body": "Testing unicode in body: こんにちは世界", "label": "inbox"},
-    {"id": 7, "from": "grace@anotherdomain.co.uk", "subject": "Empty Body", "body": "", "label": "inbox"},
-    {"id": 8, "from": "hank@ka-tch.com", "subject": "Very Long Body", "body": "X"*1000, "label": "inbox"},
-    {"id": 9, "from": "ivan@demo-example.com", "subject": "HTML <b>bold</b>", "body": "<script>alert('xss')</script>", "label": "inbox"},
-    {"id": 10, "from": "judy@example.com", "subject": "Re: Meeting", "body": "See you at 10am.\n\nBest,\nJudy", "label": "inbox"}
-]
 
+# Changed a dummy_inbox to have more properties to work with on the frontend
+dummy_inbox = [
+    {
+        "id": 1,
+        "from": "alice@ka-tch.com",
+        "subject": "Welcome!",
+        "body": "Hello!",
+        "preview": "Hello!",
+        "label": "inbox",
+        "read": False,
+        "date": "2026-05-02T10:24:00"
+    },
+    {
+        "id": 2,
+        "from": "bob@outlook.com",
+        "subject": "Meeting",
+        "body": "Let's meet.",
+        "preview": "Let's meet.",
+        "label": "inbox",
+        "read": True,
+        "date": "2026-05-02T09:10:00"
+    },
+    {
+        "id": 3,
+        "from": "carol@company.org",
+        "subject": "",
+        "body": "",
+        "preview": "",
+        "label": "inbox",
+        "read": False,
+        "date": "2026-05-01T18:45:00"
+    },
+    {
+        "id": 4,
+        "from": "dave@ka-tch.com",
+        "subject": "Long Subject " + "A"*100,
+        "body": "This is a long subject edge case.",
+        "preview": "This is a long subject edge case.",
+        "label": "inbox",
+        "read": True,
+        "date": "2026-05-01T14:30:00"
+    },
+    {
+        "id": 5,
+        "from": "eve@sub.example.com",
+        "subject": "Special chars !@#$%^&*()_+",
+        "body": "Body with special characters: <>&\"'",
+        "preview": "Body with special characters...",
+        "label": "inbox",
+        "read": False,
+        "date": "2026-05-01T12:15:00"
+    },
+    {
+        "id": 6,
+        "from": "frank@my-email.net",
+        "subject": "Unicode: 你好, мир, 😀",
+        "body": "Testing unicode in body: こんにちは世界",
+        "preview": "Testing unicode in body...",
+        "label": "inbox",
+        "read": True,
+        "date": "2026-04-30T21:00:00"
+    },
+    {
+        "id": 7,
+        "from": "grace@anotherdomain.co.uk",
+        "subject": "Empty Body",
+        "body": "",
+        "preview": "",
+        "label": "inbox",
+        "read": False,
+        "date": "2026-04-30T16:20:00"
+    },
+    {
+        "id": 8,
+        "from": "hank@ka-tch.com",
+        "subject": "Very Long Body",
+        "body": "X"*1000,
+        "preview": "X"*80,
+        "label": "inbox",
+        "read": True,
+        "date": "2026-04-30T11:05:00"
+    },
+    {
+        "id": 9,
+        "from": "ivan@demo-example.com",
+        "subject": "HTML <b>bold</b>",
+        "body": "<script>alert('xss')</script>",
+        "preview": "<script>alert('xss')</script>",
+        "label": "inbox",
+        "read": False,
+        "date": "2026-04-29T19:00:00"
+    },
+    {
+        "id": 10,
+        "from": "judy@example.com",
+        "subject": "Re: Meeting",
+        "body": "See you at 10am.\n\nBest,\nJudy",
+        "preview": "See you at 10am...",
+        "label": "inbox",
+        "read": True,
+        "date": "2026-04-29T09:30:00"
+    }
+]
 @mail_bp.route('/send', methods=['POST'])
 def send_mail():
     """

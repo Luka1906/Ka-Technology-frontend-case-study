@@ -1,9 +1,9 @@
 import Button from "../../ui/Button";
-import { Form } from "react-router-dom";
+import { Form} from "react-router-dom";
 
 const ConfirmStep = ({ formData, setCurrentStep }) => {
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-5">
       <div className="text-center space-y-1">
         <h2 className=" text-xl sm:text-2xl font-semibold tracking-tight">
           Confirm your details{" "}
