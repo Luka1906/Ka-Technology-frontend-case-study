@@ -1,16 +1,22 @@
 import { Outlet, useLoaderData } from "react-router-dom";
 import ProfileHeader from "./ProfileHeader";
 import EmailPreview from "./EmailPreview";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ProfileSideBar from "./ProfileSidebar";
 
 const Profile = () => {
-  const user = useLoaderData();
+  const {user, inbox} = useLoaderData();
   const [selectedEmail, setSelectedEmail] = useState(null);
 
   const handleSelectedEmail = (email) => {
     setSelectedEmail(email);
   };
+
+  // clear the email preview when change from inbox/sent to sent/inbox
+
+  useEffect(() => {
+    setSelectedEmail(null)
+  }, [location.pathname])
 
   return (
     <div className="min-h-screen text-white">

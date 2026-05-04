@@ -6,8 +6,14 @@ import Profile from "./pages/Profile";
 import Inbox from "./components/userProfile/Inbox";
 import "./index.css";
 
-import { loginAction, logoutAction, signUpAction } from "./pages/action";
-import { inboxLoader, userStatusLoader } from "./pages/loader";
+import {
+  loginAction,
+  logoutAction,
+  sendEmailAction,
+  signUpAction,
+} from "./pages/action";
+import { inboxLoader, profileLoader, userStatusLoader } from "./pages/loader";
+import SentEmails from "./pages/SentEmails";
 
 const App = () => {
   const router = createBrowserRouter([
@@ -27,14 +33,18 @@ const App = () => {
         },
         {
           path: "profile",
+          id: "profile",
           element: <Profile />,
-          loader: userStatusLoader,
+          loader: profileLoader,
           children: [
             {
               index: true,
               element: <Inbox />,
-              loader: inboxLoader,
             },
+            { path: "send", action: sendEmailAction },
+            {
+              path: "sent", element: <SentEmails/>
+            }
           ],
         },
         {

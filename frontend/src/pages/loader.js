@@ -20,6 +20,7 @@ export async function userStatusLoader() {
 }
 
 export async function inboxLoader() {
+    
   const response = await fetch(api + "/mail/inbox", {
     method: "GET",
     credentials: "include",
@@ -32,3 +33,15 @@ export async function inboxLoader() {
   const responseData = await response.json();
   return responseData
 }
+
+// Combining two loaders to have all data in one place
+
+export async function profileLoader () {
+  const user = await userStatusLoader();
+  const inbox = await inboxLoader();
+
+  return {
+    user,
+    inbox,
+  };
+};

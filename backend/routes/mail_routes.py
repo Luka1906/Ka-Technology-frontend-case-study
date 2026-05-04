@@ -1,9 +1,7 @@
-# Author: Kenneth Kang
-
-# Import necessary modules from Flask and other packages
 from flask import Blueprint, jsonify, request, session
 from flask_mail import Message
 from routes.auth_routes import users
+from datetime import datetime
 
 # Create a Blueprint for mail-related routes
 mail_bp = Blueprint('mail', __name__)
@@ -114,6 +112,7 @@ dummy_inbox = [
         "date": "2026-04-29T09:30:00"
     }
 ]
+
 @mail_bp.route('/send', methods=['POST'])
 def send_mail():
     """
@@ -126,22 +125,32 @@ def send_mail():
     # Check if user is logged in
     if 'user' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
+
     # Parse and validate request data
     data = request.get_json()
     if not data or not all(key in data for key in ('to', 'subject', 'body')):
         return jsonify({'error': 'Invalid request data'}), 400
+
     to = data['to']
     subject = data['subject']
     body = data['body']
+
     # Validate recipient email format
     import re
     email_regex = r"^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$"
     if not re.match(email_regex, to):
         return jsonify({'error': 'Invalid recipient email address'}), 400
+
     # Get sender's email from user session
-    sender = users.get(session['user'], {}).get('email', None)
-    if not sender:
-        sender = session['user']  # fallback to username if email not set
+
+    # Fix: session['user'] can be a dict (not always a string), so handle both cases
+    session_user = session.get('user')
+
+    if isinstance(session_user, dict):
+        sender = session_user.get('email') or session_user.get('username')
+    else:
+        sender = users.get(session_user, {}).get('email') or session_user
+
     try:
         # Always add to dummy inbox as 'sent' for the sender
         dummy_inbox.append({
@@ -149,12 +158,17 @@ def send_mail():
             "from": sender,
             "subject": subject,
             "body": body + "\n\n" + f"Sent to: {to}",
-            "label": "sent"
+            "preview": body[:80],
+            "label": "sent",
+            "date": datetime.now().isoformat()
         })
+
         return jsonify({'message': 'Email sent successfully'}), 200
+
     except Exception as e:
         # Return error if sending fails
         return jsonify({'error': str(e)}), 500
+
 
 @mail_bp.route('/status', methods=['GET'])
 def mail_status():
@@ -163,6 +177,7 @@ def mail_status():
     Returns a simple operational status message.
     """
     return jsonify({'status': 'Mail service is operational'}), 200
+
 
 @mail_bp.route('/inbox', methods=['GET'])
 def inbox():
@@ -173,15 +188,15 @@ def inbox():
     """
     if 'user' not in session:
         return jsonify({'error': 'Unauthorized'}), 401
-    # Mark sent emails in the inbox
+
     inbox_with_labels = []
     for email in dummy_inbox:
         if email.get('label') == 'sent':
             inbox_with_labels.append(email)
         else:
-            # For received emails, add label 'inbox' if not present
             labeled_email = dict(email)
             if 'label' not in labeled_email:
                 labeled_email['label'] = 'inbox'
             inbox_with_labels.append(labeled_email)
+
     return jsonify(inbox_with_labels), 200
