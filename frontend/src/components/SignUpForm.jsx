@@ -152,9 +152,7 @@ const SignUpForm = () => {
           <h1 className="text-3xl font-semibold text-white">
             KA Mail
           </h1>
-           <p className="mt-2 text-sm text-slate-400">
-            Create your private message hub
-          </p>
+           
         </div>
 
         <Card className="w-full max-w-[520px]">

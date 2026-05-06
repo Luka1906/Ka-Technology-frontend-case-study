@@ -60,7 +60,7 @@ const ProfileSideBar = () => {
         </div>
 
         <Modal onClose={() => setIsOpen(false)} isOpen={isOpen}>
-          <EmailSendForm onClose={() => setIsOpen(false)} />
+          {isOpen && <EmailSendForm onClose={() => setIsOpen(false)} />}
         </Modal>
       </aside>
     </>
